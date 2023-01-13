@@ -1,6 +1,18 @@
-import { toCapitalizeText } from "./utils/utils.js";
+import { App } from "./app.js";
+import { goodbye, greeting } from "./utils/utils.js";
+import os from 'os';
+
 
 const args = process.argv.slice(2);
 const arg = args[args.length -1];
 const username = arg.replace('--username=', '');
-console.log(`Welcome to the File Manager, ${toCapitalizeText(username)} !`);
+
+if(arg && arg.includes('--username=')) {
+    if(username) {
+        greeting(username);
+    }
+}
+
+process.on('exit', () => goodbye(username));
+const app = new App(os.homedir());
+app.start();
