@@ -13,10 +13,10 @@ export class App {
             input: process.stdin,
             output: process.stdout
           });
-          currentFolderMessage(this._curentPath)
           rl.on('line', (line) => {
+           currentFolderMessage(this._curentPath)
            const [complection, lineIn]  = completer(line);
-           if (complection.includes(lineIn)) {
+           if (lineIn) {
              switch (lineIn) {
                 case '.exit':
                 case '.quit':
@@ -26,6 +26,7 @@ export class App {
                     case '.help':
                         console.log('HELP');
                 default:
+                    console.log('Invalid input');
                     break;
              }
            };
