@@ -10,9 +10,10 @@ const username = arg.replace('--username=', '');
 if(arg && arg.includes('--username=')) {
     if(username) {
         greeting(username);
+        process.on('exit', () => goodbye(username));
+        const app = new App(os.homedir());
+        app.start();
+    } else {
+        console.log('Please try to command : npm run start -- --username=User');
     }
 }
-
-process.on('exit', () => goodbye(username));
-const app = new App(os.homedir());
-app.start();
