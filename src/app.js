@@ -1,16 +1,12 @@
 import { completer } from "./utils/utils.js";
 import { createInterface } from 'readline/promises';
 import { cwd, chdir } from 'process';
-import os from 'os';
-
-
 
 export class App {
     constructor (startDir) {
         this._curentPath = startDir; 
     }
-    
-  
+
     start() {
         const rl = createInterface({
             input: process.stdin,
@@ -18,7 +14,7 @@ export class App {
           });
           process.chdir(this._curentPath);
           rl.on('line', (line) => {
-            console.log(`You are currently in ${process.cwd()}\n`);
+            console.log(`You are currently in ${cwd()}\n`);
            const [complection, lineIn]  = completer(line);
            if (lineIn) {
              switch (lineIn) {
@@ -31,7 +27,7 @@ export class App {
                         try {
                           chdir('..');
                         } catch (err) {
-                          console.error(`chdir: ${err}`);
+                          console.error(`Operation failed: ${err}`);
                         }
                     break;
                 default:
