@@ -5,7 +5,7 @@ import os from 'os';
 
 const args = process.argv.slice(2);
 const arg = args[args.length -1];
-const username = arg.replace('--username=', '');
+const username = arg && arg.replace('--username=', '');
 
 if(arg && arg.includes('--username=')) {
     if(username) {

@@ -1,5 +1,8 @@
-import { completer, currentFolderMessage } from "./utils/utils.js";
+import { completer } from "./utils/utils.js";
 import { createInterface } from 'readline/promises';
+import { cwd, chdir } from 'process';
+import os from 'os';
+
 
 
 export class App {
@@ -13,8 +16,9 @@ export class App {
             input: process.stdin,
             output: process.stdout
           });
+          process.chdir(this._curentPath);
           rl.on('line', (line) => {
-           currentFolderMessage(this._curentPath)
+            console.log(`You are currently in ${process.cwd()}\n`);
            const [complection, lineIn]  = completer(line);
            if (lineIn) {
              switch (lineIn) {
@@ -23,8 +27,13 @@ export class App {
                 case '.q':
                     process.exit();
                     break;
-                    case '.help':
-                        console.log('HELP');
+                    case 'up':
+                        try {
+                          chdir('..');
+                        } catch (err) {
+                          console.error(`chdir: ${err}`);
+                        }
+                    break;
                 default:
                     console.log('Invalid input');
                     break;
