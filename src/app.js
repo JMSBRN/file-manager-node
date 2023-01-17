@@ -1,7 +1,7 @@
 import { createInterface } from "readline/promises";
 import { cwd, chdir, exit } from "process";
-import { readdirSync } from "fs";
-import path from "path";
+import { readdirSync, createReadStream, appendFile } from "fs";
+
 
 export class App {
   constructor(startDir) {
@@ -25,16 +25,35 @@ export class App {
       console.log(`Invalid input`);
     }
   }
-  async ls () {
-    const content = readdirSync(cwd(), { withFileTypes: true }).map(
-      (el) => {
-        return {
-          name: `${el.name}`,
-          type: el.isFile() ? "file" : "directory",
-        };
-      }
-    );
+  async ls() {
+    const content = readdirSync(cwd(), { withFileTypes: true }).map((el) => {
+      return {
+        name: `${el.name}`,
+        type: el.isFile() ? "file" : "directory",
+      };
+    });
     console.table(content);
+  }
+  async cat(arg) {
+    readdirSync(cwd(), { encoding: "utf-8" }).map((el) => {
+      if (el === arg) {
+        const rr = createReadStream(arg);
+        let chunk = "";
+        rr.on("readable", () => {
+          while (null !== (chunk = rr.read())) {
+            console.log(`${chunk}`);
+          }
+        });
+      }
+    });
+  }
+  async add (arg, content= '') {
+    if(arg) {
+      appendFile( arg, content,  (err) => {
+        if (err) throw err;
+        console.log('File is created successfully.');
+      });
+    }
   }
 
   async start() {
@@ -48,6 +67,7 @@ export class App {
       const inputValues = await rl.question(`You are currently in ${cwd()}\n`);
       const commands = inputValues.split(" ")[0];
       const arg = inputValues.split(" ").splice(1)[0];
+      const argTwo = inputValues.split(" ").splice(1)[1];
       switch (commands) {
         case ".exit":
         case ".quit":
@@ -62,6 +82,12 @@ export class App {
           break;
         case "ls":
           await this.ls();
+          break;
+        case "cat":
+          await this.cat(arg);
+          break;
+        case "add":
+         await this.add(arg, argTwo);
           break;
         default:
           break;
