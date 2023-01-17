@@ -1,6 +1,7 @@
 import { createInterface } from "readline/promises";
 import { cwd, chdir, exit } from "process";
-import { readdirSync, createReadStream, appendFile } from "fs";
+import { readdirSync, createReadStream, appendFile, renameSync, access, createWriteStream, mkdirSync } from "fs";
+import { join } from "path";
 
 
 export class App {
@@ -55,6 +56,30 @@ export class App {
       });
     }
   }
+  async rn (oldFilePath, newFilePath) {
+    readdirSync(cwd()).map((el) => {
+      if (el === oldFilePath) {
+       renameSync(oldFilePath, newFilePath);
+        console.log('File Renamed.');
+      }
+    });
+  }
+   async cp (src, newFolder, dest) {
+    const destDir = join(cwd(), newFolder);
+    access(destDir, (err) => {
+      if(err) {
+        mkdirSync(destDir);
+      }
+      let readStream = createReadStream(join(cwd(), src));
+      readStream.once('error', (err) => {
+        console.log(err);
+      });
+      readStream.once('end', () => {
+        console.log('copied successfully');
+      });
+      readStream.pipe(createWriteStream(join(destDir, dest)));
+    });
+   }
 
   async start() {
     chdir(this._curentPath);
@@ -68,6 +93,7 @@ export class App {
       const commands = inputValues.split(" ")[0];
       const arg = inputValues.split(" ").splice(1)[0];
       const argTwo = inputValues.split(" ").splice(1)[1];
+      const argThree = inputValues.split(" ").splice(1)[2];
       switch (commands) {
         case ".exit":
         case ".quit":
@@ -88,6 +114,12 @@ export class App {
           break;
         case "add":
          await this.add(arg, argTwo);
+          break;
+        case "rn":
+        await this.rn(arg, argTwo);
+          break;
+        case "cp":
+          await this.cp(arg, argTwo, argThree);
           break;
         default:
           break;
