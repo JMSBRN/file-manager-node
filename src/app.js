@@ -97,6 +97,10 @@ export class App {
       readStream.pipe(createWriteStream(join(destDir, dest)));
     });
    }
+    async rm (src) {
+      unlinkSync(join(cwd(), src));
+      console.log('File deleted!');
+    }
 
   async start() {
     chdir(this._curentPath);
@@ -140,6 +144,9 @@ export class App {
           break;
         case "mv":
           await this.mv(arg, argTwo, argThree);
+          break;
+        case "rm":
+          await this.rm(arg);
           break;
         default:
           break;
