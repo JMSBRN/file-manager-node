@@ -1,6 +1,6 @@
 import { createInterface } from "readline/promises";
 import { cwd, chdir, exit } from "process";
-import { readdirSync, createReadStream, appendFile, renameSync, access, createWriteStream, mkdirSync } from "fs";
+import { readdirSync, createReadStream, appendFile, renameSync, access, createWriteStream, mkdirSync, unlinkSync } from "fs";
 import { join } from "path";
 
 
@@ -80,6 +80,23 @@ export class App {
       readStream.pipe(createWriteStream(join(destDir, dest)));
     });
    }
+   async mv (src, newFolder, dest) {
+    const destDir = join(cwd(), newFolder);
+    access(destDir, (err) => {
+      if(err) {
+        mkdirSync(destDir);
+      }
+      let readStream = createReadStream(join(cwd(), src));
+      readStream.once('error', (err) => {
+        console.log(err);
+      });
+      readStream.on('end', () => {
+        console.log('moved successfully');
+        unlinkSync(join(cwd(), src));
+      });
+      readStream.pipe(createWriteStream(join(destDir, dest)));
+    });
+   }
 
   async start() {
     chdir(this._curentPath);
@@ -120,6 +137,9 @@ export class App {
           break;
         case "cp":
           await this.cp(arg, argTwo, argThree);
+          break;
+        case "mv":
+          await this.mv(arg, argTwo, argThree);
           break;
         default:
           break;
