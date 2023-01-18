@@ -1,8 +1,9 @@
 import { createInterface } from "readline/promises";
 import { cwd, chdir, exit } from "process";
-import { readdirSync, createReadStream, appendFile, renameSync, access, createWriteStream, mkdirSync, unlinkSync } from "fs";
+import { readdirSync, createReadStream, appendFile, renameSync, access, createWriteStream, mkdirSync, unlinkSync, readFileSync } from "fs";
 import { join } from "path";
 import os from 'os';
+import { createHash } from 'crypto';
 
 
 export class App {
@@ -102,6 +103,14 @@ export class App {
       unlinkSync(join(cwd(), src));
       console.log('File deleted!');
     }
+    async hash (arg) {
+      readdirSync(cwd()).map((el) => {
+        if (el === arg) {
+         const hashSum = createHash('sha256').update(readFileSync(el));
+         console.log(hashSum.digest('hex'));
+        }
+      });
+    }
 
   async start() {
     chdir(this._curentPath);
@@ -174,6 +183,9 @@ export class App {
             default:
               break;
           }
+          break;
+          case 'hash':
+            await this.hash(arg);
           break;
         default:
           break;
