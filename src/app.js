@@ -1,10 +1,20 @@
 import { createInterface } from "readline/promises";
 import { cwd, chdir, exit } from "process";
-import { readdirSync, createReadStream, appendFile, renameSync, access, createWriteStream, mkdirSync, unlinkSync, readFileSync } from "fs";
+import {
+  readdirSync,
+  createReadStream,
+  appendFile,
+  renameSync,
+  access,
+  createWriteStream,
+  mkdirSync,
+  unlinkSync,
+  readFileSync,
+} from "fs";
 import { join } from "path";
-import os from 'os';
-import { createHash } from 'crypto';
-
+import os from "os";
+import { createHash } from "crypto";
+import { createGzip } from "zlib";
 
 export class App {
   constructor(startDir) {
@@ -50,67 +60,84 @@ export class App {
       }
     });
   }
-  async add (arg, content= '') {
-    if(arg) {
-      appendFile( arg, content,  (err) => {
+  async add(arg, content = "") {
+    if (arg) {
+      appendFile(arg, content, (err) => {
         if (err) throw err;
-        console.log('File is created successfully.');
+        console.log("File is created successfully.");
       });
     }
   }
-  async rn (oldFilePath, newFilePath) {
+  async rn(oldFilePath, newFilePath) {
     readdirSync(cwd()).map((el) => {
       if (el === oldFilePath) {
-       renameSync(oldFilePath, newFilePath);
-        console.log('File Renamed.');
+        renameSync(oldFilePath, newFilePath);
+        console.log("File Renamed.");
       }
     });
   }
-   async cp (src, newFolder, dest) {
+  async cp(src, newFolder, dest) {
     const destDir = join(cwd(), newFolder);
     access(destDir, (err) => {
-      if(err) {
+      if (err) {
         mkdirSync(destDir);
       }
       let readStream = createReadStream(join(cwd(), src));
-      readStream.once('error', (err) => {
+      readStream.once("error", (err) => {
         console.log(err);
       });
-      readStream.once('end', () => {
-        console.log('copied successfully');
+      readStream.once("end", () => {
+        console.log("copied successfully");
       });
       readStream.pipe(createWriteStream(join(destDir, dest)));
     });
-   }
-   async mv (src, newFolder, dest) {
+  }
+  async mv(src, newFolder, dest) {
     const destDir = join(cwd(), newFolder);
     access(destDir, (err) => {
-      if(err) {
+      if (err) {
         mkdirSync(destDir);
       }
       let readStream = createReadStream(join(cwd(), src));
-      readStream.once('error', (err) => {
+      readStream.once("error", (err) => {
         console.log(err);
       });
-      readStream.on('end', () => {
-        console.log('moved successfully');
+      readStream.on("end", () => {
+        console.log("moved successfully");
         unlinkSync(join(cwd(), src));
       });
       readStream.pipe(createWriteStream(join(destDir, dest)));
     });
-   }
-    async rm (src) {
-      unlinkSync(join(cwd(), src));
-      console.log('File deleted!');
-    }
-    async hash (arg) {
-      readdirSync(cwd()).map((el) => {
-        if (el === arg) {
-         const hashSum = createHash('sha256').update(readFileSync(el));
-         console.log(hashSum.digest('hex'));
-        }
-      });
-    }
+  }
+  async rm(src) {
+    unlinkSync(join(cwd(), src));
+    console.log("File deleted!");
+  }
+  async hash(arg) {
+    readdirSync(cwd()).map((el) => {
+      if (el === arg) {
+        const hashSum = createHash("sha256").update(readFileSync(el));
+        console.log(hashSum.digest("hex"));
+      }
+    });
+  }
+  async compress (src, dest) {
+    access(dest, (err) => {
+      if (err) {
+        mkdirSync(dest, { recursive: true });
+        readdirSync(cwd()).map((el) => {
+          if (el === src) {
+            createReadStream(el)
+              .pipe(createGzip())
+              .pipe(createWriteStream(`${dest}.gz`))
+              .on("finish", () => {
+                console.log(`file compressed at path = ${dest}`);
+              });
+          }
+        });
+      }
+    });
+  }
 
   async start() {
     chdir(this._curentPath);
@@ -144,10 +171,10 @@ export class App {
           await this.cat(arg);
           break;
         case "add":
-         await this.add(arg, argTwo);
+          await this.add(arg, argTwo);
           break;
         case "rn":
-        await this.rn(arg, argTwo);
+          await this.rn(arg, argTwo);
           break;
         case "cp":
           await this.cp(arg, argTwo, argThree);
@@ -160,32 +187,40 @@ export class App {
           break;
         case "os":
           switch (arg) {
-            case '--EOL':
+            case "--EOL":
               const input = JSON.stringify(os.EOL);
-              console.log('end-of-line marker is :', input.substring(1, input.length - 1));
+              console.log(
+                "end-of-line marker is :",
+                input.substring(1, input.length - 1)
+              );
               break;
-              case'--cpus':
-                const information = [{
-                  cpus : os.cpus().length,
+            case "--cpus":
+              const information = [
+                {
+                  cpus: os.cpus().length,
                   model: os.cpus()[0].model,
-                }]
-                console.table(information);
+                },
+              ];
+              console.table(information);
               break;
-              case'--homedir':
+            case "--homedir":
               console.log(os.homedir());
               break;
-              case'--username':
+            case "--username":
               console.log(os.userInfo().username);
               break;
-              case'--architecture':
+            case "--architecture":
               console.log(os.arch());
               break;
             default:
               break;
           }
           break;
-          case 'hash':
-            await this.hash(arg);
+        case "hash":
+          await this.hash(arg);
+          break;
+        case "compress":
+          await this.compress(arg, argTwo);
           break;
         default:
           break;
