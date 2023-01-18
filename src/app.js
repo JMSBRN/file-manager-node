@@ -2,6 +2,7 @@ import { createInterface } from "readline/promises";
 import { cwd, chdir, exit } from "process";
 import { readdirSync, createReadStream, appendFile, renameSync, access, createWriteStream, mkdirSync, unlinkSync } from "fs";
 import { join } from "path";
+import os from 'os';
 
 
 export class App {
@@ -147,6 +148,32 @@ export class App {
           break;
         case "rm":
           await this.rm(arg);
+          break;
+        case "os":
+          switch (arg) {
+            case '--EOL':
+              const input = JSON.stringify(os.EOL);
+              console.log('end-of-line marker is :', input.substring(1, input.length - 1));
+              break;
+              case'--cpus':
+                const information = [{
+                  cpus : os.cpus().length,
+                  model: os.cpus()[0].model,
+                }]
+                console.table(information);
+              break;
+              case'--homedir':
+              console.log(os.homedir());
+              break;
+              case'--username':
+              console.log(os.userInfo().username);
+              break;
+              case'--architecture':
+              console.log(os.arch());
+              break;
+            default:
+              break;
+          }
           break;
         default:
           break;
