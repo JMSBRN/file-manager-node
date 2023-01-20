@@ -10,8 +10,9 @@ import {
   mkdirSync,
   unlinkSync,
   readFileSync,
+  existsSync,
 } from "fs";
-import { join } from "path";
+import { basename, extname, join, dirname } from "path";
 import os from "os";
 import { createHash } from "crypto";
 import { createGzip } from "zlib";
@@ -122,21 +123,19 @@ export class App {
     });
   }
   async compress (src, dest) {
-    access(dest, (err) => {
-      if (err) {
-        mkdirSync(dest, { recursive: true });
-        readdirSync(cwd()).map((el) => {
-          if (el === src) {
-            createReadStream(el)
-              .pipe(createGzip())
-              .pipe(createWriteStream(`${dest}.gz`))
-              .on("finish", () => {
-                console.log(`file compressed at path = ${dest}`);
-              });
-          }
+    const gzip = createGzip();
+    readdirSync(cwd()).map((el) => {
+      if (el === src) {
+        const rs = createReadStream(src, {encoding: 'utf-8'}).on('error', (err) => {
+          console.log('error rs', err);
         });
+        if(!existsSync(dest)){
+          mkdirSync(dirname(argTwo), { recursive: true });
+          const ws  = createWriteStream(`${dest}`).on('error', (err) => console.log('err ws', err)).on('finish', () => console.log('compressed successfully'));
+          rs.pipe(gzip).pipe(ws)
+        }
       }
-    });
+    })
   }
 
   async start() {
@@ -220,7 +219,7 @@ export class App {
           await this.hash(arg);
           break;
         case "compress":
-          await this.compress(arg, argTwo);
+         
           break;
         default:
           break;
