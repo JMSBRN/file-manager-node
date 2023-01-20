@@ -10,8 +10,9 @@ import {
   mkdirSync,
   unlinkSync,
   readFileSync,
+  existsSync,
 } from "fs";
-import { join } from "path";
+import { basename, extname, join, dirname } from "path";
 import os from "os";
 import { createHash } from "crypto";
 import { createGzip } from "zlib";
@@ -220,7 +221,21 @@ export class App {
           await this.hash(arg);
           break;
         case "compress":
-          await this.compress(arg, argTwo);
+          const gzip = createGzip();
+            readdirSync(cwd()).map((el) => {
+              if (el === arg) {
+                const rs = createReadStream(arg, {encoding: 'utf-8'}).on('error', (err) => {
+                  console.log('error rs', err);
+                }).on('end', () => {
+                  console.log('end reading');
+                });
+                if(!existsSync(argTwo)){
+                  mkdirSync(dirname(argTwo), { recursive: true });
+                  const ws  = createWriteStream(`${argTwo}`).on('error', (err) => console.log('err ws', err)).on('finish', () => console.log('compressed successfully'));
+                  rs.pipe(gzip).pipe(ws)
+                }
+              }
+            })
           break;
         default:
           break;
