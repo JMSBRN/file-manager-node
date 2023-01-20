@@ -130,7 +130,7 @@ export class App {
           console.log('error rs', err);
         });
         if(!existsSync(dest)){
-          mkdirSync(dirname(argTwo), { recursive: true });
+          mkdirSync(dirname(dest), { recursive: true });
           const ws  = createWriteStream(`${dest}`).on('error', (err) => console.log('err ws', err)).on('finish', () => console.log('compressed successfully'));
           rs.pipe(gzip).pipe(ws)
         }
@@ -219,7 +219,7 @@ export class App {
           await this.hash(arg);
           break;
         case "compress":
-         
+         await this.compress(arg, argTwo);
           break;
         default:
           break;
