@@ -15,7 +15,7 @@ import {
 import { join, dirname, parse, basename, extname } from "path";
 import os from "os";
 import { createHash } from "crypto";
-import { createGzip } from "zlib";
+import { createGzip, createUnzip } from "zlib";
 
 export class App {
   constructor(startDir) {
@@ -122,20 +122,51 @@ export class App {
       }
     });
   }
-  async compress (src, dest) {
+  async compress(src, dest) {
     const gzip = createGzip();
     readdirSync(cwd()).map((el) => {
       if (el === src) {
-        const rs = createReadStream(src, {encoding: 'utf-8'}).on('error', (err) => {
-          console.log('error rs', err);
-        });
-        if(!existsSync(dest)){
-          !!Object.values(parse(dest))[1] && mkdirSync(dirname(dest), { recursive: true });
-          const ws  = createWriteStream(`${dest}`).on('error', (err) => console.log('err ws', err)).on('finish', () => console.log('compressed successfully'));
-          rs.pipe(gzip).pipe(ws)
+        const rs = createReadStream(src, { encoding: "utf-8" }).on(
+          "error",
+          (err) => {
+            console.log("error rs", err);
+          }
+        );
+        if (!existsSync(dest)) {
+          !!Object.values(parse(dest))[1] &&
+            mkdirSync(dirname(dest), { recursive: true });
+          const ws = createWriteStream(`${dest}`)
+            .on("error", (err) => console.log("err ws", err))
+            .on("finish", () => console.log("compressed successfully"));
+          rs.pipe(gzip).pipe(ws);
         }
       }
-    })
+    });
+  }
+  async decompress (src, dest) {
+    const unZip = createUnzip();
+    readdirSync(cwd()).map((el) => {
+      if (el === src) {
+        if (parse(src).ext === ".gz") {
+          const rs = createReadStream(basename(src)).on(
+            "error",
+            (err) => {
+              console.log(err);
+            }
+          );
+          if (!existsSync(dest)) {
+            !!Object.values(parse(dest))[1] &&
+              mkdirSync(dirname(argTwo), { recursive: true });
+            const ws = createWriteStream(`${dest}`)
+              .on("error", (err) => console.log("err ws", err))
+              .on("finish", () => {
+                console.log("unziped succeffully");
+              });
+            rs.pipe(unZip).pipe(ws);
+          }
+        }
+      }
+    });
   }
 
   async start() {
@@ -219,7 +250,10 @@ export class App {
           await this.hash(arg);
           break;
         case "compress":
-         await this.compress(arg, argTwo);
+          await this.compress(arg, argTwo);
+          break;
+        case "decompress":
+        await this.decompress(arg, argTwo);
           break;
         default:
           break;
