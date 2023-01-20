@@ -12,63 +12,18 @@ import {
   readFileSync,
   existsSync,
 } from "fs";
-import { join, dirname, parse, basename, extname } from "path";
+import { join, dirname, parse, basename } from "path";
 import os from "os";
 import { createHash } from "crypto";
 import { createGzip, createUnzip } from "zlib";
+import { tryCatchWrapper } from "./utils/utils.js";
+import { add, cat, ls } from "./utils/helpers.js";
 
 export class App {
   constructor(startDir) {
     this._curentPath = startDir;
   }
-  async up() {
-    try {
-      chdir("..");
-    } catch (err) {
-      console.error(`Operation failed: ${err}`);
-    }
-  }
-  async cd(arg) {
-    if (arg) {
-      try {
-        chdir(arg);
-      } catch (err) {
-        console.error(`Operation failed ${err}`);
-      }
-    } else {
-      console.log(`Invalid input`);
-    }
-  }
-  async ls() {
-    const content = readdirSync(cwd(), { withFileTypes: true }).map((el) => {
-      return {
-        name: `${el.name}`,
-        type: el.isFile() ? "file" : "directory",
-      };
-    });
-    console.table(content);
-  }
-  async cat(arg) {
-    readdirSync(cwd(), { encoding: "utf-8" }).map((el) => {
-      if (el === arg) {
-        const rr = createReadStream(arg);
-        let chunk = "";
-        rr.on("readable", () => {
-          while (null !== (chunk = rr.read())) {
-            console.log(`${chunk}`);
-          }
-        });
-      }
-    });
-  }
-  async add(arg, content = "") {
-    if (arg) {
-      appendFile(arg, content, (err) => {
-        if (err) throw err;
-        console.log("File is created successfully.");
-      });
-    }
-  }
+
   async rn(oldFilePath, newFilePath) {
     readdirSync(cwd()).map((el) => {
       if (el === oldFilePath) {
@@ -189,19 +144,19 @@ export class App {
           exit();
           break;
         case "up":
-          await this.up();
+          tryCatchWrapper(chdir, '..');
           break;
         case "cd":
-          await this.cd(arg);
+          tryCatchWrapper(chdir, arg);
           break;
         case "ls":
-          await this.ls();
+          tryCatchWrapper(ls);
           break;
         case "cat":
-          await this.cat(arg);
+          tryCatchWrapper(cat, arg);
           break;
         case "add":
-          await this.add(arg, argTwo);
+          tryCatchWrapper(add(arg, argTwo));
           break;
         case "rn":
           await this.rn(arg, argTwo);
@@ -243,19 +198,21 @@ export class App {
               console.log(os.arch());
               break;
             default:
+              console.log('Invalid input');
               break;
-          }
+            }
+            break;
+            case "hash":
+              await this.hash(arg);
           break;
-        case "hash":
-          await this.hash(arg);
-          break;
-        case "compress":
-          await this.compress(arg, argTwo);
-          break;
-        case "decompress":
-        await this.decompress(arg, argTwo);
-          break;
-        default:
+          case "compress":
+            await this.compress(arg, argTwo);
+            break;
+            case "decompress":
+              await this.decompress(arg, argTwo);
+              break;
+              default:
+                console.log('Invalid input');
           break;
       }
     }
