@@ -12,7 +12,7 @@ import {
   readFileSync,
   existsSync,
 } from "fs";
-import { basename, extname, join, dirname } from "path";
+import { join, dirname, parse, basename, extname } from "path";
 import os from "os";
 import { createHash } from "crypto";
 import { createGzip } from "zlib";
@@ -130,7 +130,7 @@ export class App {
           console.log('error rs', err);
         });
         if(!existsSync(dest)){
-          mkdirSync(dirname(dest), { recursive: true });
+          !!Object.values(parse(dest))[1] && mkdirSync(dirname(dest), { recursive: true });
           const ws  = createWriteStream(`${dest}`).on('error', (err) => console.log('err ws', err)).on('finish', () => console.log('compressed successfully'));
           rs.pipe(gzip).pipe(ws)
         }
