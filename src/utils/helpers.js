@@ -1,33 +1,42 @@
-import { readdirSync, createReadStream, appendFile } from 'fs';
-import { cwd } from 'process';
+import {
+  readdirSync,
+  createReadStream,
+  appendFile,
+  existsSync,
+  mkdirSync,
+} from "fs";
+import { dirname, parse } from "path";
+import { cwd } from "process";
 
-export  const ls = async () => {
-    const content = readdirSync(cwd(), { withFileTypes: true }).map((el) => {
-      return {
-        name: `${el.name}`,
-        type: el.isFile() ? "file" : "directory",
-      };
+export const ls = async () => {
+  const content = readdirSync(cwd(), { withFileTypes: true }).map((el) => {
+    return {
+      name: `${el.name}`,
+      type: el.isFile() ? "file" : "directory",
+    };
+  });
+  console.table(content);
+};
+
+export const cat = (arg) => {
+  let chunk = "";
+  const rs = createReadStream(arg, { flags: "r" })
+    .on("readable", () => {
+      while (null !== (chunk = rs.read())) {
+        console.log(`${chunk}`);
+      }
+    })
+    .on("error", () => {
+      console.log("no element in this folder plese try ls function");
     });
-    console.table(content);
-  };
-
-  export const cat = (arg) => {
-   readdirSync(cwd(), { encoding: "utf-8" });
-        let chunk = "";
-   const rs = createReadStream(arg, { flags: 'rs+' }).on("readable", () => {
-          while (null !== (chunk = rs.read())) {
-            console.log(`${chunk}`);
-          }
-        }).on('error', () => {
-          console.log('no element in this folder plese try ls function');
-        });
-    
+};
+export const add = async (arg, content = "") => {
+  if (!existsSync(arg)) {
+    !!Object.values(parse(arg))[1] &&
+      mkdirSync(dirname(arg), { recursive: true });
+    appendFile(arg, content, (err) => {
+      if (err) throw err;
+      console.log("File is created successfully.");
+    });
   }
-  export const add = async (arg, content = "") => {
-    if (arg) {
-      appendFile(arg, content, (err) => {
-        if (err) throw err;
-        console.log("File is created successfully.");
-      });
-    }
-  }
+};

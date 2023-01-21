@@ -156,7 +156,7 @@ export class App {
           tryCatchWrapper(cat, arg);
           break;
         case "add":
-          tryCatchWrapper(add(arg, argTwo));
+          tryCatchWrapper(add, arg, argTwo);
           break;
         case "rn":
           await this.rn(arg, argTwo);
