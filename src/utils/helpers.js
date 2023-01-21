@@ -4,9 +4,11 @@ import {
   appendFile,
   existsSync,
   mkdirSync,
-  renameSync
+  renameSync,
+  createWriteStream,
+  unlinkSync
 } from "fs";
-import { dirname, parse } from "path";
+import { dirname, join, parse } from "path";
 import { cwd } from "process";
 
 export const ls = async () => {
@@ -47,4 +49,30 @@ export  const rn =  async (oldFilePath, newFilePath) => {
       console.log("File Renamed successfully");
     }
   });
-}
+};
+export const cp = async (src, dest) => {
+  const rs = createReadStream(src, { flags: 'r'}).on('error', () => {
+    console.log("no element in this folder plese try ls function");
+  });
+  if(!existsSync(dest)) {
+    !!Object.values(parse(dest))[1] && mkdirSync(dirname(dest), { recursive: true }); 
+    const ws = createWriteStream(dest).on('finish', () => {
+      console.log('copied successfully');
+    });
+    rs.pipe(ws);     
+    
+  }
+};
+export const mv =  async (src, dest) =>  {
+  const rs = createReadStream(src, { flags: 'r'}).on('error', () => {
+      console.log("no element in this folder plese try ls function");
+    });
+    if (!existsSync(dest)) {
+      !!Object.values(parse(dest))[1] && mkdirSync(dirname(dest), { recursive: true });
+      const ws = createWriteStream(dest).on('finish', () => {
+        unlinkSync(src);
+        console.log('moved successfully');
+      });
+      rs.pipe(ws);
+    }
+};

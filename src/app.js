@@ -3,9 +3,6 @@ import { cwd, chdir, exit } from "process";
 import {
   readdirSync,
   createReadStream,
-  appendFile,
-  renameSync,
-  access,
   createWriteStream,
   mkdirSync,
   unlinkSync,
@@ -17,46 +14,13 @@ import os from "os";
 import { createHash } from "crypto";
 import { createGzip, createUnzip } from "zlib";
 import { tryCatchWrapper } from "./utils/utils.js";
-import { add, cat, ls, rn } from "./utils/helpers.js";
+import { add, cat, cp, ls, mv, rn } from "./utils/helpers.js";
 
 export class App {
   constructor(startDir) {
     this._curentPath = startDir;
   }
 
-  async cp(src, newFolder, dest) {
-    const destDir = join(cwd(), newFolder);
-    access(destDir, (err) => {
-      if (err) {
-        mkdirSync(destDir);
-      }
-      let readStream = createReadStream(join(cwd(), src));
-      readStream.once("error", (err) => {
-        console.log(err);
-      });
-      readStream.once("end", () => {
-        console.log("copied successfully");
-      });
-      readStream.pipe(createWriteStream(join(destDir, dest)));
-    });
-  }
-  async mv(src, newFolder, dest) {
-    const destDir = join(cwd(), newFolder);
-    access(destDir, (err) => {
-      if (err) {
-        mkdirSync(destDir);
-      }
-      let readStream = createReadStream(join(cwd(), src));
-      readStream.once("error", (err) => {
-        console.log(err);
-      });
-      readStream.on("end", () => {
-        console.log("moved successfully");
-        unlinkSync(join(cwd(), src));
-      });
-      readStream.pipe(createWriteStream(join(destDir, dest)));
-    });
-  }
   async rm(src) {
     unlinkSync(join(cwd(), src));
     console.log("File deleted!");
@@ -128,7 +92,6 @@ export class App {
       const commands = inputValues.split(" ")[0];
       const arg = inputValues.split(" ").splice(1)[0];
       const argTwo = inputValues.split(" ").splice(1)[1];
-      const argThree = inputValues.split(" ").splice(1)[2];
       switch (commands) {
         case ".exit":
         case ".quit":
@@ -154,10 +117,10 @@ export class App {
           tryCatchWrapper(rn, arg, argTwo);
           break;
         case "cp":
-          await this.cp(arg, argTwo, argThree);
+          tryCatchWrapper(cp, arg, argTwo);
           break;
         case "mv":
-          await this.mv(arg, argTwo, argThree);
+          tryCatchWrapper(mv, arg, argTwo);
           break;
         case "rm":
           await this.rm(arg);
