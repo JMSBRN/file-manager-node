@@ -4,6 +4,7 @@ import {
   appendFile,
   existsSync,
   mkdirSync,
+  renameSync
 } from "fs";
 import { dirname, parse } from "path";
 import { cwd } from "process";
@@ -17,7 +18,6 @@ export const ls = async () => {
   });
   console.table(content);
 };
-
 export const cat = (arg) => {
   let chunk = "";
   const rs = createReadStream(arg, { flags: "r" })
@@ -40,3 +40,11 @@ export const add = async (arg, content = "") => {
     });
   }
 };
+export  const rn =  async (oldFilePath, newFilePath) => {
+  readdirSync(cwd()).map((el) => {
+    if (el === oldFilePath) {
+      renameSync(oldFilePath, newFilePath);
+      console.log("File Renamed successfully");
+    }
+  });
+}

@@ -17,21 +17,13 @@ import os from "os";
 import { createHash } from "crypto";
 import { createGzip, createUnzip } from "zlib";
 import { tryCatchWrapper } from "./utils/utils.js";
-import { add, cat, ls } from "./utils/helpers.js";
+import { add, cat, ls, rn } from "./utils/helpers.js";
 
 export class App {
   constructor(startDir) {
     this._curentPath = startDir;
   }
 
-  async rn(oldFilePath, newFilePath) {
-    readdirSync(cwd()).map((el) => {
-      if (el === oldFilePath) {
-        renameSync(oldFilePath, newFilePath);
-        console.log("File Renamed.");
-      }
-    });
-  }
   async cp(src, newFolder, dest) {
     const destDir = join(cwd(), newFolder);
     access(destDir, (err) => {
@@ -159,7 +151,7 @@ export class App {
           tryCatchWrapper(add, arg, argTwo);
           break;
         case "rn":
-          await this.rn(arg, argTwo);
+          tryCatchWrapper(rn, arg, argTwo);
           break;
         case "cp":
           await this.cp(arg, argTwo, argThree);
