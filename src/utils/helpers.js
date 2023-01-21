@@ -6,7 +6,8 @@ import {
   mkdirSync,
   renameSync,
   createWriteStream,
-  unlinkSync
+  unlinkSync,
+  unlink
 } from "fs";
 import { dirname, join, parse } from "path";
 import { cwd } from "process";
@@ -75,4 +76,20 @@ export const mv =  async (src, dest) =>  {
       });
       rs.pipe(ws);
     }
+};
+ export const rm = async (src) => {
+    unlink(src, (err) => {
+      if (err) {
+        console.log("no element in this folder plese try ls function");
+      }
+      console.log('file deleted successfully');
+    })    
+};
+export const hash = async (arg) => {
+  readdirSync(cwd()).map((el) => {
+    if (el === arg) {
+      const hashSum = createHash("sha256").update(readFileSync(el));
+      console.log(hashSum.digest("hex"));
+    }
+  });
 };

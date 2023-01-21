@@ -14,25 +14,13 @@ import os from "os";
 import { createHash } from "crypto";
 import { createGzip, createUnzip } from "zlib";
 import { tryCatchWrapper } from "./utils/utils.js";
-import { add, cat, cp, ls, mv, rn } from "./utils/helpers.js";
+import { add, cat, cp, ls, mv, rm, rn } from "./utils/helpers.js";
 
 export class App {
   constructor(startDir) {
     this._curentPath = startDir;
   }
 
-  async rm(src) {
-    unlinkSync(join(cwd(), src));
-    console.log("File deleted!");
-  }
-  async hash(arg) {
-    readdirSync(cwd()).map((el) => {
-      if (el === arg) {
-        const hashSum = createHash("sha256").update(readFileSync(el));
-        console.log(hashSum.digest("hex"));
-      }
-    });
-  }
   async compress(src, dest) {
     const gzip = createGzip();
     readdirSync(cwd()).map((el) => {
@@ -123,7 +111,7 @@ export class App {
           tryCatchWrapper(mv, arg, argTwo);
           break;
         case "rm":
-          await this.rm(arg);
+          tryCatchWrapper(rm, arg);
           break;
         case "os":
           switch (arg) {
