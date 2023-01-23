@@ -26,43 +26,43 @@ export class App {
         case ".q":
           exit();
         case "up":
-          tryCatchWrapper(chdir, '..');
+          await tryCatchWrapper(chdir, '..');
           break;
         case "cd":
-          tryCatchWrapper(chdir, arg);
+          await tryCatchWrapper(chdir, arg);
           break;
         case "ls":
-          tryCatchWrapper(ls);
+         await  tryCatchWrapper(ls);
           break;
         case "cat":
-          tryCatchWrapper(cat, arg);
+         await tryCatchWrapper(cat, arg);
           break;
         case "add":
-          tryCatchWrapper(add, arg, argTwo);
+         await tryCatchWrapper(add, arg, argTwo);
           break;
         case "rn":
-          tryCatchWrapper(rn, arg, argTwo);
+         await tryCatchWrapper(rn, arg, argTwo);
           break;
         case "cp":
-          tryCatchWrapper(cp, arg, argTwo);
+        await tryCatchWrapper(cp, arg, argTwo);
           break;
         case "mv":
-          tryCatchWrapper(mv, arg, argTwo);
+          await tryCatchWrapper(mv, arg, argTwo);
           break;
         case "rm":
-          tryCatchWrapper(rm, arg);
+          await tryCatchWrapper(rm, arg);
           break;
         case "os":
-         tryCatchWrapper(osCommands, arg);
+         await tryCatchWrapper(osCommands, arg);
             break;
             case "hash":
-         tryCatchWrapper(hash, arg);
+        await tryCatchWrapper(hash, arg);
           break;
           case "compress":
-            compress(arg, argTwo);
+          await  compress(arg, argTwo);
             break;
             case "decompress":
-              decompress(arg, argTwo);
+            await  decompress(arg, argTwo);
               break;
               default:
                 console.log('Invalid input');

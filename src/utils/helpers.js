@@ -1,4 +1,4 @@
-import { dirname, parse } from "path";
+import { parse } from "path";
 import { cwd } from "process";
 import os from "os";
 import { createHash } from "crypto";
@@ -8,13 +8,13 @@ import {
   createReadStream,
   appendFile,
   existsSync,
-  mkdirSync,
   renameSync,
   createWriteStream,
   unlinkSync,
   unlink,
   readFileSync,
 } from "fs";
+import { cretateNewFolder, noElementMessage, opearationFailedMessage } from "./utils.js";
 
 export const ls = async () => {
   const content = readdirSync(cwd(), { withFileTypes: true }).map((el) => {
@@ -34,14 +34,13 @@ export const cat = (arg) => {
       }
     })
     .on("error", () => {
-      console.log("no element in this folder plese try ls function");
+      noElementMessage();
     });
 };
-export const add = async (arg, content = "") => {
-  if (!existsSync(arg)) {
-    !!Object.values(parse(arg))[1] &&
-      mkdirSync(dirname(arg), { recursive: true });
-    appendFile(arg, content, (err) => {
+export const add = async (src, content = "") => {
+  if (!existsSync(src)) {
+   cretateNewFolder(src);
+    appendFile(src, content, (err) => {
       if (err) throw err;
       console.log("File is created successfully.");
     });
@@ -50,42 +49,52 @@ export const add = async (arg, content = "") => {
 export const rn = async (src, dest) => {
   readdirSync(cwd()).map((el) => {
     if (el === src) {
-      renameSync(src, dest);
-      console.log("File Renamed successfully");
+      if (dest) {
+        renameSync(src, dest);
+        console.log("File Renamed successfully");
+      } else {
+        opearationFailedMessage();;
+      }
     }
   });
 };
 export const cp = async (src, dest) => {
   const rs = createReadStream(src, { flags: "r" }).on("error", () => {
-    console.log("no element in this folder plese try ls function");
+    noElementMessage();
   });
-  if (!existsSync(dest)) {
-    !!Object.values(parse(dest))[1] &&
-      mkdirSync(dirname(dest), { recursive: true });
-    const ws = createWriteStream(dest).on("finish", () => {
-      console.log("copied successfully");
-    });
-    rs.pipe(ws);
+  if (dest) {
+    if (!existsSync(dest)) {
+     cretateNewFolder(dest);
+      const ws = createWriteStream(dest).on("finish", () => {
+        console.log("copied successfully");
+      });
+      rs.pipe(ws);
+    } else {
+      opearationFailedMessage();;
+    }
   }
 };
 export const mv = async (src, dest) => {
   const rs = createReadStream(src, { flags: "r" }).on("error", () => {
-    console.log("no element in this folder plese try ls function");
+    noElementMessage();
   });
-  if (!existsSync(dest)) {
-    !!Object.values(parse(dest))[1] &&
-      mkdirSync(dirname(dest), { recursive: true });
-    const ws = createWriteStream(dest).on("finish", () => {
-      unlinkSync(src);
-      console.log("moved successfully");
-    });
-    rs.pipe(ws);
+  if (dest) {
+    if (!existsSync(dest)) {
+      cretateNewFolder(dest);
+      const ws = createWriteStream(dest).on("finish", () => {
+        unlinkSync(src);
+        console.log("moved successfully");
+      });
+      rs.pipe(ws);
+    }
+  } else {
+    opearationFailedMessage();;
   }
 };
 export const rm = async (src) => {
   unlink(src, (err) => {
     if (err) {
-      console.log("no element in this folder plese try ls function");
+      noElementMessage();
     }
     console.log("file deleted successfully");
   });
@@ -125,7 +134,7 @@ export const osCommands = async (arg) => {
 export const hash = async (src) => {
   createReadStream(src, { flags: "r" })
     .on("error", () => {
-      console.log("no element in this folder plese try ls function");
+      noElementMessage();
     })
     .once("readable", () => {
       const hashSum = createHash("sha256").update(readFileSync(src));
@@ -135,30 +144,36 @@ export const hash = async (src) => {
 export const compress = async (src, dest) => {
   const gzip = createGzip();
   const rs = createReadStream(src, { flags: "r" }).on("error", () => {
-    console.log("no element in this folder plese try ls function");
+    noElementMessage();
   });
-  if (!existsSync(dest)) {
-    !!Object.values(parse(dest))[1] &&
-      mkdirSync(dirname(dest), { recursive: true });
-    const ws = createWriteStream(dest).on("finish", () =>
-      console.log("compressed successfully")
-    );
-    rs.pipe(gzip).pipe(ws);
+  if (dest) {
+    if (!existsSync(dest)) {
+      cretateNewFolder(dest);
+      const ws = createWriteStream(dest).on("finish", () =>
+        console.log("compressed successfully")
+      );
+      rs.pipe(gzip).pipe(ws);
+    }
+  } else {
+    opearationFailedMessage();
   }
 };
 export const decompress = async (src, dest) => {
   const unZip = createUnzip();
   if (parse(src).ext === ".gz") {
       const rs = createReadStream(src, { flags: "r" }).on("error", () => {
-      console.log("no element in this folder plese try ls function");
+      noElementMessage();
     });
-    if (!existsSync(dest)) {
-      !!Object.values(parse(dest))[1] &&
-        mkdirSync(dirname(dest), { recursive: true });
-      const ws = createWriteStream(`${dest}`).on("finish", () => {
-        console.log("unziped succeffully");
-      });
-      rs.pipe(unZip).pipe(ws);
+    if (dest) {
+      if (!existsSync(dest)) {
+        cretateNewFolder(dest);
+        const ws = createWriteStream(`${dest}`).on("finish", () => {
+          console.log("unziped succeffully");
+        });
+        rs.pipe(unZip).pipe(ws);
+      }
+    } else {
+      opearationFailedMessage();
     }
   }
 };
