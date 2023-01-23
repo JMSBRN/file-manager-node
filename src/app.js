@@ -1,7 +1,7 @@
 import { createInterface } from "readline/promises";
 import { cwd, chdir, exit } from "process";
 import { tryCatchWrapper } from "./utils/utils.js";
-import { add, cat, compress, cp, decompress, hash, ls, mv, osCommands, rm, rn } from "./utils/helpers.js";
+import { files, osModule, hash, zipModule } from "./modules/index.js";
 
 export class App {
   constructor(startDir) {
@@ -20,6 +20,9 @@ export class App {
       const commands = inputValues.split(" ")[0];
       const arg = inputValues.split(" ").splice(1)[0];
       const argTwo = inputValues.split(" ").splice(1)[1];
+      const { readFile, addFile, copyFile, moveFile, removeFile, renameFile, listFolder } = files;
+      const { osCommands } = osModule;
+      const { compress, decompress } = zipModule;
       switch (commands) {
         case ".exit":
         case ".quit":
@@ -32,25 +35,25 @@ export class App {
           await tryCatchWrapper(chdir, arg);
           break;
         case "ls":
-         await  tryCatchWrapper(ls);
+         await  tryCatchWrapper(listFolder);
           break;
         case "cat":
-         await tryCatchWrapper(cat, arg);
+         await tryCatchWrapper(readFile, arg);
           break;
         case "add":
-         await tryCatchWrapper(add, arg, argTwo);
+         await tryCatchWrapper(addFile, arg, argTwo);
           break;
         case "rn":
-         await tryCatchWrapper(rn, arg, argTwo);
+         await tryCatchWrapper(renameFile, arg, argTwo);
           break;
         case "cp":
-        await tryCatchWrapper(cp, arg, argTwo);
+        await tryCatchWrapper(copyFile, arg, argTwo);
           break;
         case "mv":
-          await tryCatchWrapper(mv, arg, argTwo);
+          await tryCatchWrapper(moveFile, arg, argTwo);
           break;
         case "rm":
-          await tryCatchWrapper(rm, arg);
+          await tryCatchWrapper(removeFile, arg);
           break;
         case "os":
          await tryCatchWrapper(osCommands, arg);
