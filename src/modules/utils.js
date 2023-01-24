@@ -19,7 +19,7 @@ export const tryCatchWrapper = async (fn, arg, argTwo=null) => {
         opearationFailedMessage();
     }
 };
-export const cretateNewFolder = (dest) => {
+export const createNewFolder = (dest) => {
   !!Object.values(parse(dest))[1] &&
   mkdirSync(dirname(dest), { recursive: true });
 };

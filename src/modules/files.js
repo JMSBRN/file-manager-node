@@ -1,14 +1,14 @@
+import { cwd } from "process";
 import {
-    readdirSync,
-    createReadStream,
-    appendFile,
-    existsSync,
-    rename,
-    createWriteStream,
-    unlink,
-  } from "fs";
-  import { cwd } from "process";
-import { cretateNewFolder, opearationFailedMessage } from "../utils/utils.js";
+  readdirSync,
+  createReadStream,
+  appendFile,
+  existsSync,
+  rename,
+  createWriteStream,
+  unlink,
+} from "fs";
+import { utils } from '../modules/index.js';
 
 export const listFolder = async () => {
     const content = readdirSync(cwd(), { withFileTypes: true }).map((el) => {
@@ -28,12 +28,12 @@ export const listFolder = async () => {
         }
       })
       .on("error", () => {
-        opearationFailedMessage();
+        utils.opearationFailedMessage();
       });
   };
   export const addFile = async (src, content = "") => {
     if (!existsSync(src)) {
-     cretateNewFolder(src);
+     utils.createNewFolder(src);
       appendFile(src, content, (err) => {
         if (err) throw err;
         console.log("File is created successfully.");
@@ -47,24 +47,24 @@ export const listFolder = async () => {
           rename(src, dest);
           console.log("File Renamed successfully");
         } else {
-          opearationFailedMessage();;
+          utils.opearationFailedMessage();;
         }
       }
     });
   };
   export const copyFile = async (src, dest) => {
     const rs = createReadStream(src, { flags: "r" }).on("error", () => {
-      opearationFailedMessage();
+      utils.opearationFailedMessage();
     });
     if (dest) {
       if (!existsSync(dest)) {
-       cretateNewFolder(dest);
+       utils.createNewFolder(dest);
         const ws = createWriteStream(dest).on("finish", () => {
           console.log("copied successfully");
         });
         rs.pipe(ws);
       } else {
-        opearationFailedMessage();;
+        utils.opearationFailedMessage();
       }
     }
   };
@@ -74,7 +74,7 @@ export const listFolder = async () => {
     });
     if (dest) {
       if (!existsSync(dest)) {
-        cretateNewFolder(dest);
+        utils.createNewFolder(dest);
         const ws = createWriteStream(dest).on("finish", () => {
           unlink(src);
           console.log("moved successfully");
@@ -82,13 +82,13 @@ export const listFolder = async () => {
         rs.pipe(ws);
       }
     } else {
-      opearationFailedMessage();
+      utils.opearationFailedMessage();
     }
   };
   export const removeFile = async (src) => {
     unlink(src, (err) => {
       if (err) {
-        opearationFailedMessage();
+        utils.opearationFailedMessage();
       }
       console.log("file deleted successfully");
     });

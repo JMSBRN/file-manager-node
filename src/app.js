@@ -1,4 +1,4 @@
-import { startModule } from "./modules/startModule.js";
+import { startModule } from "./modules/index.js";
 
 export class App {
   constructor(startDir) {

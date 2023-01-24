@@ -1,7 +1,9 @@
 import { createInterface } from "readline/promises";
 import { cwd, chdir, exit } from "process";
-import { tryCatchWrapper } from "../utils/utils.js";
+import { utils } from "../modules/index.js";
 import { files, osModule, hash, zipModule } from "../modules/index.js";
+
+const { tryCatchWrapper } = utils;
 
 export const startModule = async (workDir) => {
     chdir(workDir);

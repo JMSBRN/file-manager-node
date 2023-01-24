@@ -1,8 +1,7 @@
-import { App } from "./app.js";
-import { goodbye, greeting } from "./utils/utils.js";
+import { App } from './app.js';
+import { utils} from './modules/index.js';
 import os from 'os';
-
-
+const { greeting, goodbye } = utils;
 const args = process.argv.slice(2);
 const arg = args[args.length -1];
 const username = arg && arg.replace('--username=', '');
