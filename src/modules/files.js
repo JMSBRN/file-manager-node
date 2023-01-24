@@ -27,7 +27,7 @@ import { utils } from '../modules/index.js';
      utils.createNewFolder(src);
       appendFile(src, content, (err) => {
         if (err) throw err;
-        console.log("File is created successfully.");
+        console.log(utils.successMesages.created);;
       });
     }
   };
@@ -36,7 +36,7 @@ import { utils } from '../modules/index.js';
       if (el === src) {
         if (dest) {
           rename(src, dest);
-          console.log("File Renamed successfully");
+          console.log(utils.successMesages.renamed);
         } else {
           utils.opearationFailedMessage();;
         }
@@ -51,7 +51,7 @@ import { utils } from '../modules/index.js';
       if (!existsSync(dest)) {
        utils.createNewFolder(dest);
         const ws = createWriteStream(dest).on("finish", () => {
-          console.log("copied successfully");
+          console.log(utils.successMesages.copyed);
         });
         rs.pipe(ws);
       } else {
@@ -68,7 +68,7 @@ import { utils } from '../modules/index.js';
         utils.createNewFolder(dest);
         const ws = createWriteStream(dest).on("finish", () => {
           unlink(src);
-          console.log("moved successfully");
+          console.log(utils.successMesages.moved);
         });
         rs.pipe(ws);
       }
@@ -76,11 +76,11 @@ import { utils } from '../modules/index.js';
       utils.opearationFailedMessage();
     }
   };
-  export const removeFile = async (src) => {
+  export const deleteFile = async (src) => {
     unlink(src, (err) => {
       if (err) {
         utils.opearationFailedMessage();
       }
-      console.log("file deleted successfully");
+      console.log(utils.successMesages.deleted);
     });
   };

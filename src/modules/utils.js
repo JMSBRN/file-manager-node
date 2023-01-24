@@ -23,3 +23,10 @@ export const createNewFolder = (dest) => {
   !!Object.values(parse(dest))[1] &&
   mkdirSync(dirname(dest), { recursive: true });
 };
+export const successMesages = {
+  created: 'File created successfully',
+  renamed: 'File renamed successfully',
+  copyed: 'File copyed successfully',
+  moved: 'File moved successfully',
+  deleted: 'File deleted successfully',
+}

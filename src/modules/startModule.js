@@ -17,7 +17,7 @@ export const startModule = async (workDir) => {
       const commands = inputValues.split(" ")[0];
       const arg = inputValues.split(" ").splice(1)[0];
       const argTwo = inputValues.split(" ").splice(1)[1];
-      const { readFile, addFile, copyFile, moveFile, removeFile, renameFile } = files;
+      const { readFile, addFile, copyFile, moveFile, deleteFile, renameFile } = files;
       const { osCommands } = osModule;
       const { compress, decompress } = zipModule;
       const { navUp, navChDir, navlistFolder } = navigation;
@@ -51,7 +51,7 @@ export const startModule = async (workDir) => {
           await tryCatchWrapper(moveFile, arg, argTwo);
           break;
         case "rm":
-          await tryCatchWrapper(removeFile, arg);
+          await tryCatchWrapper(deleteFile, arg);
           break;
         case "os":
          await tryCatchWrapper(osCommands, arg);

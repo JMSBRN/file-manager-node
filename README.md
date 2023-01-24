@@ -157,7 +157,7 @@ score:
 - ✔️ **+30** All operations marked as to be implemented using certain streams should be performed using Streams API
 - ✔️ **+20** No synchronous Node.js API with asynchronous analogues is used (e.g. not used `readFileSync` instead of `readFile`)  
 - ✔️ **+20** Codebase is written in ESM modules instead of CommonJS
-- **+20** Codebase is separated (at least 7 modules)
+- ✔️ **+20** Codebase is separated (at least 7 modules)
 
 ## Forfeits
 
