@@ -9,7 +9,7 @@ export const goodbye  = (username) => console.log(`Thank you for using File Mana
 export const opearationFailedMessage = () => {
   console.log('Operation failed');
 };
-export const tryCatchWrapper = async (fn, arg, argTwo=null) => {
+export const tryCatchWrapper = async (fn, arg=null, argTwo=null) => {
       try {
         if (argTwo) {
           return await fn(arg, argTwo);

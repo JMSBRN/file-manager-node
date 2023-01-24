@@ -10,15 +10,6 @@ import {
 } from "fs";
 import { utils } from '../modules/index.js';
 
-export const listFolder = async () => {
-    const content = readdirSync(cwd(), { withFileTypes: true }).map((el) => {
-      return {
-        name: `${el.name}`,
-        type: el.isFile() ? "file" : "directory",
-      };
-    });
-    console.table(content);
-  };
   export const readFile = (arg) => {
     let chunk = "";
     const rs = createReadStream(arg, { flags: "r" })

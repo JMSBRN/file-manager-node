@@ -1,7 +1,7 @@
 import { createInterface } from "readline/promises";
-import { cwd, chdir, exit } from "process";
+import { chdir, cwd, exit } from "process";
 import { utils } from "../modules/index.js";
-import { files, osModule, hash, zipModule } from "../modules/index.js";
+import { files, osModule, hash, zipModule, navigation } from "../modules/index.js";
 
 const { tryCatchWrapper } = utils;
 
@@ -17,22 +17,23 @@ export const startModule = async (workDir) => {
       const commands = inputValues.split(" ")[0];
       const arg = inputValues.split(" ").splice(1)[0];
       const argTwo = inputValues.split(" ").splice(1)[1];
-      const { readFile, addFile, copyFile, moveFile, removeFile, renameFile, listFolder } = files;
+      const { readFile, addFile, copyFile, moveFile, removeFile, renameFile } = files;
       const { osCommands } = osModule;
       const { compress, decompress } = zipModule;
+      const { navUp, navChDir, navlistFolder } = navigation;
       switch (commands) {
         case ".exit":
         case ".quit":
         case ".q":
           exit();
         case "up":
-          await tryCatchWrapper(chdir, '..');
+          await tryCatchWrapper(navUp);
           break;
         case "cd":
-          await tryCatchWrapper(chdir, arg);
+          await tryCatchWrapper(navChDir, arg);
           break;
         case "ls":
-         await  tryCatchWrapper(listFolder);
+         await  tryCatchWrapper(navlistFolder, cwd());
           break;
         case "cat":
          await tryCatchWrapper(readFile, arg);
