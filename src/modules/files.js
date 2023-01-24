@@ -7,8 +7,10 @@ import {
   rename,
   createWriteStream,
   unlink,
+  statSync,
 } from "fs";
 import { utils } from '../modules/index.js';
+import { checkFileExistExtension } from "./utils.js";
 
   export const readFile = (arg) => {
     let chunk = "";
@@ -23,12 +25,14 @@ import { utils } from '../modules/index.js';
       });
   };
   export const addFile = async (src, content = "") => {
-    if (!existsSync(src)) {
-     utils.createNewFolder(src);
-      appendFile(src, content, (err) => {
-        if (err) throw err;
-        console.log(utils.successMesages.created);;
-      });
+   if (checkFileExistExtension(src)) {
+      if (!existsSync(src)) {
+       utils.createNewFolder(src);
+        appendFile(src, content, (err) => {
+          if (err) utils.opearationFailedMessage();
+          console.log(utils.successMesages.created);
+        });
+      }
     }
   };
   export const renameFile = async (src, dest) => {

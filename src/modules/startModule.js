@@ -2,6 +2,7 @@ import { createInterface } from "readline/promises";
 import { chdir, cwd, exit } from "process";
 import { utils } from "../modules/index.js";
 import { files, osModule, hash, zipModule, navigation } from "../modules/index.js";
+import { parse } from "path";
 
 const { tryCatchWrapper } = utils;
 

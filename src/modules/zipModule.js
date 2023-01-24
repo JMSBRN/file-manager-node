@@ -35,7 +35,7 @@ export const compress = async (src, dest) => {
       if (dest) {
         if (!existsSync(dest)) {
           createNewFolder(dest);
-          const ws = createWriteStream(`${dest}`).on("finish", () => {
+          const ws = createWriteStream(dest).on("finish", () => {
             console.log("unziped succeffully");
           });
           rs.pipe(unZip).pipe(ws);

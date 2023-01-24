@@ -1,5 +1,6 @@
 import { mkdirSync} from 'fs';
 import { dirname, parse } from 'path';
+import { utils } from './index.js';
 
 export const toCapitalizeText = (text) => {
   return text.toLowerCase().charAt(0).toUpperCase()+(text.slice(1).toLowerCase());
@@ -30,3 +31,10 @@ export const successMesages = {
   moved: 'File moved successfully',
   deleted: 'File deleted successfully',
 }
+export const checkFileExistExtension = (src) => {
+  if (parse(src).ext) {
+    return true;
+  } else {
+    utils.opearationFailedMessage();
+  }
+};
